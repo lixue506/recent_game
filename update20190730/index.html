@@ -1,0 +1,200 @@
+<html>
+
+<HEAD>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>各大OJ近期比赛汇总</title>
+    <script src="http://acm.sdut.edu.cn/onlinejudge2/Public/Home/bootstrap/js/jquery-3.0.0.min.js"></script>
+    <style type="text/css">
+        #tab {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            width: 80%;
+            border-collapse: collapse;
+
+        }
+
+        table {
+            width: 80%;
+            border: 1px solid #1A5CC8;
+            border-collapse: collapse;
+        }
+
+        tr.odd {
+            color: #000000;
+            background-color: #D7EBFF;
+
+        }
+
+        th {
+            font-size: 1.1em;
+            text-align: center;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            background-color: #1A5CC8;
+            color: #ffffff;
+
+        }
+
+        td {
+            font-size: 1em;
+            border: 1px solid #1A5CC8;
+            padding: 3px 7px 3px 7px;
+            font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+        }
+
+        .titl {
+            text-align: center;
+        }
+    </style>
+</HEAD>
+
+<BODY>
+    <a href="http://acm.sdut.edu.cn">返回首页</a>
+    <h1 align="center">各大OJ近期比赛汇总</h1>
+    <h4 align="center">数据来源：<a href="http://contests.sdutacm.cn/contests.json"
+            target="_blank">http://contests.sdutacm.cn/contests.json</a></h4>
+        <table align="center" class="tab">
+            <thead>
+                <tr>
+                    <th>OJ</th>
+                    <th>Name</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Countdown</th>
+                </tr>
+            </thead>
+            <tbody id="main">
+            </tbody>
+        </table>
+        <div style="text-align: center">
+            <p>Copyright &copy; 2019. All right reserved. Design by <a
+                    href="https://github.com/ma6174/recentcontest">ma6174</a></p>
+        </div>
+</body>
+
+<script>
+    //url：ajax请求的网址；function:成功后回调的函数
+    $.get('http://contests.sdutacm.cn/contests.json', function (data) {
+        //遍历data
+        data.forEach(item => {
+            let flag = '';//判断比赛是否在一天之内
+            let start_time = new Date(item.start_time)
+            let end_time = new Date(item.end_time)
+            if (end_time - start_time > 7 * 24 * 60 * 60 * 1000) {  // 忽略时长七天以上的比赛
+                return
+            }
+            let countdown = Math.floor((start_time - new Date()) / 60 / 60 / 24 / 1000)
+            if (countdown < 0) {
+                countdown = 0
+            }
+            if (start_time < new Date()) {
+                flag = 'odd'
+            } else {
+                flag = ''
+            }
+            start_time = formatDate(start_time, 'yyyy-MM-dd HH:mm');
+            end_time = formatDate(end_time, 'yyyy-MM-dd HH:mm');
+            let tr = `<tr class="${flag}">
+    <td>${convertSource(item.source)}</td>
+    <td><a href="${item.link}" target="_blank">${item.name}</a></td>
+    <td>${start_time}</td>
+    <td>${end_time}</td>
+    <td>${countdown} day</td>
+</tr>`
+            $('#main').append(tr)
+        });
+    })
+
+    function convertSource(source) {
+        switch (source) {
+            case 'jisuanke': return '计蒜客'
+            case 'nowcoder': return '牛客网'
+            case 'luogu': return '洛谷'
+        }
+        return source
+    }
+
+    function formatDate(date, format, utc) {
+        var MMMM = ["\x00", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        var MMM = ["\x01", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var dddd = ["\x02", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        var ddd = ["\x03", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+        function ii(i, len) {
+            var s = i + "";
+            len = len || 2;
+            while (s.length < len) s = "0" + s;
+            return s;
+        }
+
+        var y = utc ? date.getUTCFullYear() : date.getFullYear();
+        format = format.replace(/(^|[^\\])yyyy+/g, "$1" + y);
+        format = format.replace(/(^|[^\\])yy/g, "$1" + y.toString().substr(2, 2));
+        format = format.replace(/(^|[^\\])y/g, "$1" + y);
+
+        var M = (utc ? date.getUTCMonth() : date.getMonth()) + 1;
+        format = format.replace(/(^|[^\\])MMMM+/g, "$1" + MMMM[0]);
+        format = format.replace(/(^|[^\\])MMM/g, "$1" + MMM[0]);
+        format = format.replace(/(^|[^\\])MM/g, "$1" + ii(M));
+        format = format.replace(/(^|[^\\])M/g, "$1" + M);
+
+        var d = utc ? date.getUTCDate() : date.getDate();
+        format = format.replace(/(^|[^\\])dddd+/g, "$1" + dddd[0]);
+        format = format.replace(/(^|[^\\])ddd/g, "$1" + ddd[0]);
+        format = format.replace(/(^|[^\\])dd/g, "$1" + ii(d));
+        format = format.replace(/(^|[^\\])d/g, "$1" + d);
+
+        var H = utc ? date.getUTCHours() : date.getHours();
+        format = format.replace(/(^|[^\\])HH+/g, "$1" + ii(H));
+        format = format.replace(/(^|[^\\])H/g, "$1" + H);
+
+        var h = H > 12 ? H - 12 : H == 0 ? 12 : H;
+        format = format.replace(/(^|[^\\])hh+/g, "$1" + ii(h));
+        format = format.replace(/(^|[^\\])h/g, "$1" + h);
+
+        var m = utc ? date.getUTCMinutes() : date.getMinutes();
+        format = format.replace(/(^|[^\\])mm+/g, "$1" + ii(m));
+        format = format.replace(/(^|[^\\])m/g, "$1" + m);
+
+        var s = utc ? date.getUTCSeconds() : date.getSeconds();
+        format = format.replace(/(^|[^\\])ss+/g, "$1" + ii(s));
+        format = format.replace(/(^|[^\\])s/g, "$1" + s);
+
+        var f = utc ? date.getUTCMilliseconds() : date.getMilliseconds();
+        format = format.replace(/(^|[^\\])fff+/g, "$1" + ii(f, 3));
+        f = Math.round(f / 10);
+        format = format.replace(/(^|[^\\])ff/g, "$1" + ii(f));
+        f = Math.round(f / 10);
+        format = format.replace(/(^|[^\\])f/g, "$1" + f);
+
+        var T = H < 12 ? "AM" : "PM";
+        format = format.replace(/(^|[^\\])TT+/g, "$1" + T);
+        format = format.replace(/(^|[^\\])T/g, "$1" + T.charAt(0));
+
+        var t = T.toLowerCase();
+        format = format.replace(/(^|[^\\])tt+/g, "$1" + t);
+        format = format.replace(/(^|[^\\])t/g, "$1" + t.charAt(0));
+
+        var tz = -date.getTimezoneOffset();
+        var K = utc || !tz ? "Z" : tz > 0 ? "+" : "-";
+        if (!utc) {
+            tz = Math.abs(tz);
+            var tzHrs = Math.floor(tz / 60);
+            var tzMin = tz % 60;
+            K += ii(tzHrs) + ":" + ii(tzMin);
+        }
+        format = format.replace(/(^|[^\\])K/g, "$1" + K);
+
+        var day = (utc ? date.getUTCDay() : date.getDay()) + 1;
+        format = format.replace(new RegExp(dddd[0], "g"), dddd[day]);
+        format = format.replace(new RegExp(ddd[0], "g"), ddd[day]);
+
+        format = format.replace(new RegExp(MMMM[0], "g"), MMMM[M]);
+        format = format.replace(new RegExp(MMM[0], "g"), MMM[M]);
+
+        format = format.replace(/\\(.)/g, "$1");
+
+        return format;
+    };
+</script>
+
+</html>

@@ -1,0 +1,98 @@
+<html>
+
+<HEAD>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>各大OJ近期比赛汇总</title>
+    <script src="http://acm.sdut.edu.cn/onlinejudge2/Public/Home/bootstrap/js/jquery-3.0.0.min.js"></script>
+    <style type="text/css">
+
+        table {
+            width: 80%;
+            border: 1px solid #1A5CC8;
+            border-collapse: collapse;
+        }
+
+        th {
+            font-size: 1.1em;
+            text-align: center;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            background-color: #1A5CC8;
+            color: #ffffff;
+
+        }
+
+        td {
+            font-size: 1em;
+            border: 1px solid #1A5CC8;
+            padding: 3px 7px 3px 7px;
+            font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+        }
+
+    </style>
+</HEAD>
+
+<BODY>
+<a href="http://acm.sdut.edu.cn">返回首页</a>
+<h1 align="center">各大OJ近期比赛汇总</h1>
+<h4 align="center">数据来源：<a href="http://contests.sdutacm.cn/contests.json"
+                           target="_blank">http://contests.sdutacm.cn/contests.json</a></h4>
+<table align="center">
+    <thead>
+    <tr>
+        <th>OJ</th>
+        <th>Name</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Countdown</th>
+    </tr>
+    </thead>
+    <tbody id="main">
+    </tbody>
+</table>
+<div style="text-align: center">
+    <p>Copyright &copy; 2019. All right reserved. Design by <a
+            href="https://github.com/ma6174/recentcontest">ma6174</a></p>
+</div>
+</body>
+
+<script>
+    //url：ajax请求的网址；function:成功后回调的函数
+    $.get('http://contests.sdutacm.cn/contests.json', function (data) {
+        //遍历data
+        data.forEach(item => {
+            let start_time = new Date(item.start_time)
+            let countdown = Math.floor((start_time - new Date()) / 60 / 60 / 24 / 1000)
+            if (countdown < 0) {
+                return
+            }
+            start_time = formatDate(item.start_time);
+            end_time = formatDate(item.end_time);
+            let tr = `<tr>
+    <td>${convertSource(item.source)}</td>
+    <td><a href="${item.link}" target="_blank">${item.name}</a></td>
+    <td>${start_time}</td>
+    <td>${end_time}</td>
+    <td>${countdown} day</td>
+</tr>`
+            $('#main').append(tr)
+        });
+    })
+
+    function convertSource(source) {
+        switch (source) {
+            case 'jisuanke': return '计蒜客'
+            case 'nowcoder': return '牛客网'
+            case 'luogu': return '洛谷'
+        }
+        return source
+    }
+
+    function formatDate(time) {
+        format = time.replace('T','  ');
+        format = format.replace(':00Z','');
+        return format;
+    };
+</script>
+
+</html>
