@@ -1,0 +1,70 @@
+#!/bin/bash
+basedir=/backup/weekly
+
+DAY=`date +%Y%m%d`
+
+
+wwwd=$basedir/www
+others=$basedir/others
+userinfod=$basedir/userinfo
+
+
+for dirs in  $wwwd $others $userinfod
+do
+    [ ! -d "$dirs"  ] && mkdir -p $dirs
+done
+
+
+cd /var
+    tar -zcvf $wwwd/www_$DAY.tar.gz www
+
+cd $wwwd
+    new_www=www_$DAY.tar.gz
+    for item in `ls | grep www`
+    do
+        if [ $item != $new_www ]
+        then
+            rm -vf $item
+        fi
+    done
+
+
+cd /
+    tar -zcvf $others/etc_$DAY.tar.gz etc
+
+cd /var/lib
+    tar -zcvf $others/mysql_$DAY.tar.gz mysql
+
+cd $others
+    newmysql=mysql_$DAY.tar.gz
+    newetc = etc_$DAY.tar.gz
+    for item in `ls | grep  etc`
+    do
+        if [ $item != $newetc ]
+        then
+            rm -vf $item
+        fi
+    done
+
+    for item in `ls | grep mysql`
+    do
+        if [ $item != $newmysql ]
+        then
+            rm -vf $item
+        fi
+    done
+
+
+cd $userinfod
+    tar -zcvf $userinfod/home_$DAY.tar.gz /home
+    newhome=home_$DAY.tar.gz
+    for home in `ls | grep home`
+    do
+        if [ $home != $newhome ]
+        then
+            rm -vf $home
+        fi
+    done
+
+
+
